@@ -21,6 +21,7 @@ const ProductsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [pagination, setPagination] = useState(null);
 
   // ============================================
   // SECTION 2: DATA FETCHING LOGIC
@@ -41,6 +42,7 @@ const ProductsScreen = () => {
       // Handle NEW pagination response structure: {success, products, pagination}
       if (data.success && data.products) {
         setProducts(data.products);
+        setPagination(data.pagination); // Store pagination metadata
       } else if (data.success && data.data) {
         // Fallback for old response structure
         setProducts(data.data);
@@ -157,7 +159,20 @@ const ProductsScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Grocery Products</Text>
-        <Text style={styles.headerSubtitle}>{products.length} items available</Text>
+        <Text style={styles.headerSubtitle}>
+          {products.length} items shown
+          {pagination && ` • Page ${pagination.currentPage} of ${pagination.totalPages}`}
+        </Text>
+        {pagination && (
+          <View style={styles.paginationInfo}>
+            <Text style={styles.paginationText}>
+              Total: {pagination.totalItems} products
+            </Text>
+            {pagination.hasNextPage && (
+              <Text style={styles.paginationBadge}>More available</Text>
+            )}
+          </View>
+        )}
       </View>
       
       <FlatList
@@ -203,6 +218,29 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
     color: '#e8f5e9',
+  },
+  paginationInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  paginationText: {
+    fontSize: 13,
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  paginationBadge: {
+    fontSize: 11,
+    color: '#4CAF50',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    fontWeight: 'bold',
   },
   
   // Center Container (Loading/Error/Empty)
