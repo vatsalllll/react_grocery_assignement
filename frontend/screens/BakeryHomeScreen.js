@@ -46,6 +46,16 @@ const BakeryHomeScreen = () => {
     fetchProducts(1);
   }, [activeCategory]);
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchQuery.length === 0 || searchQuery.length >= 3) {
+        fetchProducts(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
   const fetchProducts = async (page = 1) => {
     try {
       setLoading(true);
@@ -138,11 +148,6 @@ const BakeryHomeScreen = () => {
     );
   };
 
-  const handleSearch = () => {
-    setCurrentPage(1);
-    fetchProducts(1);
-  };
-
   const goToPage = (page) => {
     if (page >= 1 && page <= pagination?.totalPages) {
       fetchProducts(page);
@@ -182,12 +187,10 @@ const BakeryHomeScreen = () => {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="What you wish for?"
+            placeholder="What you wish for? (min 3 letters)"
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={setSearchQuery}
-            onSubmitEditing={handleSearch}
-            returnKeyType="search"
           />
         </View>
       </View>
