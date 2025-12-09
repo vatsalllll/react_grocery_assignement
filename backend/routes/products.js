@@ -247,4 +247,252 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+ * ENDPOINT 4: PUT /products/:id
+ * Update an existing product (partial updates supported)
+ * Validates:
+ *   - Product exists (404 if not found)
+ *   - ID format is valid MongoDB ObjectId
+ *   - Data types are correct if fields are provided
+ *   - Price and stock must be positive numbers if provided
+ *   - Name cannot be empty string if provided
+ *   - createdAt field cannot be updated
+ * Returns:
+ *   - Updated product document with { new: true }
+ *   - 404 if product not found
+ *   - 400 for validation errors
+ */
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // ============================================
+    // STEP 1: VALIDATE MONGODB OBJECTID FORMAT
+    // ============================================
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid product ID format',
+        message: 'Product ID must be a valid MongoDB ObjectId (24 hex characters)'
+      });
+    }
+    
+    // ============================================
+    // STEP 2: VALIDATE REQUEST BODY
+    // ============================================
+    const { name, price, imageUrl, category, description, stock, createdAt } = req.body;
+    
+    // Don't allow updating createdAt
+    if (createdAt !== undefined) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'Cannot update createdAt field'
+      });
+    }
+    
+    // Validate name if provided
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          message: 'Product name cannot be empty'
+        });
+      }
+    }
+    
+    // Validate price if provided
+    if (price !== undefined) {
+      if (typeof price !== 'number' && isNaN(Number(price))) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          message: 'Product price must be a valid number'
+        });
+      }
+      
+      if (Number(price) < 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          message: 'Product price cannot be negative'
+        });
+      }
+    }
+    
+    // Validate stock if provided
+    if (stock !== undefined) {
+      if (typeof stock !== 'number' && isNaN(Number(stock))) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          message: 'Stock must be a valid number'
+        });
+      }
+      
+      if (Number(stock) < 0) {
+        return res.status(400).json({
+          success: false,
+          error: 'Validation failed',
+          message: 'Stock cannot be negative'
+        });
+      }
+    }
+    
+    // ============================================
+    // STEP 3: BUILD UPDATE OBJECT
+    // ============================================
+    const updateData = {};
+    
+    if (name !== undefined) updateData.name = name.trim();
+    if (price !== undefined) updateData.price = Number(price);
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+    if (category !== undefined) updateData.category = category;
+    if (description !== undefined) updateData.description = description;
+    if (stock !== undefined) updateData.stock = Number(stock);
+    
+    // Check if there's anything to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: 'No valid fields provided for update'
+      });
+    }
+    
+    // ============================================
+    // STEP 4: UPDATE PRODUCT IN DATABASE
+    // ============================================
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { 
+        new: true,           // Return the updated document
+        runValidators: true  // Run mongoose schema validators
+      }
+    );
+    
+    // Check if product was found
+    if (!updatedProduct) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found',
+        message: `No product found with ID: ${id}`
+      });
+    }
+    
+    // ============================================
+    // STEP 5: RETURN SUCCESS RESPONSE
+    // ============================================
+    res.status(200).json({
+      success: true,
+      message: 'Product updated successfully',
+      data: updatedProduct
+    });
+    
+  } catch (error) {
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        message: messages.join(', ')
+      });
+    }
+    
+    // Handle CastError (invalid MongoDB ID format that passed regex but still invalid)
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid ID',
+        message: 'Invalid product ID format'
+      });
+    }
+    
+    // Handle any other database or server errors
+    console.error('Error updating product:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error while updating product',
+      message: error.message
+    });
+  }
+});
+
+/**
+ * ENDPOINT 5: DELETE /products/:id
+ * Delete a product by ID
+ * Validates:
+ *   - Product exists (404 if not found)
+ *   - ID format is valid MongoDB ObjectId
+ * Returns:
+ *   - Success message with deleted product's name
+ *   - 404 if product not found
+ *   - 400 for invalid ID format
+ */
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // ============================================
+    // STEP 1: VALIDATE MONGODB OBJECTID FORMAT
+    // ============================================
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid product ID format',
+        message: 'Product ID must be a valid MongoDB ObjectId (24 hex characters)'
+      });
+    }
+    
+    // ============================================
+    // STEP 2: FIND AND DELETE PRODUCT
+    // ============================================
+    // Use findByIdAndDelete to get the product data before deletion
+    const deletedProduct = await Product.findByIdAndDelete(id);
+    
+    // Check if product was found
+    if (!deletedProduct) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found',
+        message: `No product found with ID: ${id}`
+      });
+    }
+    
+    // ============================================
+    // STEP 3: RETURN SUCCESS RESPONSE
+    // ============================================
+    res.status(200).json({
+      success: true,
+      message: `Product "${deletedProduct.name}" deleted successfully`,
+      data: {
+        id: deletedProduct._id,
+        name: deletedProduct.name,
+        deletedAt: new Date().toISOString()
+      }
+    });
+    
+  } catch (error) {
+    // Handle CastError (invalid MongoDB ID format that passed regex but still invalid)
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid ID',
+        message: 'Invalid product ID format'
+      });
+    }
+    
+    // Handle any other database or server errors
+    console.error('Error deleting product:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error while deleting product',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;
