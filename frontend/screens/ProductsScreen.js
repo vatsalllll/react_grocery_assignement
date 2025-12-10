@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView, Alert } from 'react-native';
 import { 
   Header, 
   ProductList, 
@@ -8,11 +8,12 @@ import {
   EmptyState,
   EditProductModal
 } from '../components';
+import { API_BASE, ITEMS_PER_PAGE } from '../constants/config';
+import { productsScreenStyles } from '../styles/productsScreen.styles';
 
 // ============================================
 // API CONFIGURATION
 // ============================================
-const API_BASE = 'http://10.51.2.187:3000';
 
 const ProductsScreen = () => {
   // ============================================
@@ -26,8 +27,6 @@ const ProductsScreen = () => {
   const [pagination, setPagination] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  
-  const itemsPerPage = 12;
 
   // ============================================
   // API CALLS
@@ -43,7 +42,7 @@ const ProductsScreen = () => {
       setError(null);
       
       const response = await fetch(
-        `${API_BASE}/products?page=${page}&limit=${itemsPerPage}`
+        `${API_BASE}/products?page=${page}&limit=${ITEMS_PER_PAGE}`
       );
       
       const data = await response.json();
@@ -221,7 +220,7 @@ const ProductsScreen = () => {
   // ============================================
   
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={productsScreenStyles.container}>
       <Header pagination={pagination} />
       
       <ProductList
@@ -251,16 +250,5 @@ const ProductsScreen = () => {
     </SafeAreaView>
   );
 };
-
-// ============================================
-// STYLES
-// ============================================
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-});
 
 export default ProductsScreen;

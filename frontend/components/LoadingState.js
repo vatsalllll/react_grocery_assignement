@@ -1,27 +1,15 @@
 import React from 'react';
-import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, Text } from 'react-native';
+import { COLORS } from '../constants/theme';
+import { loadingStateStyles } from '../styles/loadingState.styles';
 
 const LoadingState = () => {
   return (
-    <View style={styles.centerContainer}>
-      <ActivityIndicator size="large" color="#4CAF50" />
-      <Text style={styles.loadingText}>Loading products...</Text>
+    <View style={loadingStateStyles.centerContainer}>
+      <ActivityIndicator size="large" color={COLORS.success} />
+      <Text style={loadingStateStyles.loadingText}>Loading products...</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#666',
-  },
-});
 
 export default LoadingState;

@@ -1,7 +1,9 @@
 import React from 'react';
-import { FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { FlatList, RefreshControl } from 'react-native';
 import ProductCard from './ProductCard';
 import PaginationFooter from './PaginationFooter';
+import { COLORS } from '../constants/theme';
+import { productListStyles } from '../styles/productList.styles';
 
 const ProductList = ({ 
   products, 
@@ -38,12 +40,12 @@ const ProductList = ({
       data={products}
       renderItem={renderProductCard}
       keyExtractor={(item) => item._id}
-      contentContainerStyle={styles.listContainer}
+      contentContainerStyle={productListStyles.listContainer}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          colors={['#4CAF50']}
+          colors={[COLORS.success]}
         />
       }
       ListFooterComponent={renderFooter}
@@ -51,11 +53,5 @@ const ProductList = ({
     />
   );
 };
-
-const styles = StyleSheet.create({
-  listContainer: {
-    paddingVertical: 8,
-  },
-});
 
 export default ProductList;

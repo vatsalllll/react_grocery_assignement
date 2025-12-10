@@ -5,11 +5,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { editProductModalStyles } from '../styles/editProductModal.styles';
 
 const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
   const [formData, setFormData] = useState({
@@ -115,50 +115,50 @@ const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
       transparent={true}
       onRequestClose={handleCancel}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <View style={editProductModalStyles.modalOverlay}>
+        <View style={editProductModalStyles.modalContent}>
           {/* Header */}
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Edit Product</Text>
-            <TouchableOpacity onPress={handleCancel} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
+          <View style={editProductModalStyles.modalHeader}>
+            <Text style={editProductModalStyles.modalTitle}>Edit Product</Text>
+            <TouchableOpacity onPress={handleCancel} style={editProductModalStyles.closeButton}>
+              <Text style={editProductModalStyles.closeButtonText}>✕</Text>
             </TouchableOpacity>
           </View>
 
           {/* Form */}
-          <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
+          <ScrollView style={editProductModalStyles.formContainer} showsVerticalScrollIndicator={false}>
             {/* Product Name */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Product Name *</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Product Name *</Text>
               <TextInput
-                style={[styles.input, errors.name && styles.inputError]}
+                style={[editProductModalStyles.input, errors.name && editProductModalStyles.inputError]}
                 value={formData.name}
                 onChangeText={(text) => setFormData({ ...formData, name: text })}
                 placeholder="Enter product name"
                 placeholderTextColor="#999"
               />
-              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+              {errors.name && <Text style={editProductModalStyles.errorText}>{errors.name}</Text>}
             </View>
 
             {/* Price */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Price ($) *</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Price ($) *</Text>
               <TextInput
-                style={[styles.input, errors.price && styles.inputError]}
+                style={[editProductModalStyles.input, errors.price && editProductModalStyles.inputError]}
                 value={formData.price}
                 onChangeText={(text) => setFormData({ ...formData, price: text })}
                 placeholder="0.00"
                 keyboardType="decimal-pad"
                 placeholderTextColor="#999"
               />
-              {errors.price && <Text style={styles.errorText}>{errors.price}</Text>}
+              {errors.price && <Text style={editProductModalStyles.errorText}>{errors.price}</Text>}
             </View>
 
             {/* Category */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Category</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Category</Text>
               <TextInput
-                style={styles.input}
+                style={editProductModalStyles.input}
                 value={formData.category}
                 onChangeText={(text) => setFormData({ ...formData, category: text })}
                 placeholder="e.g., Fruits, Vegetables, Dairy"
@@ -167,24 +167,24 @@ const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
             </View>
 
             {/* Stock */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Stock</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Stock</Text>
               <TextInput
-                style={[styles.input, errors.stock && styles.inputError]}
+                style={[editProductModalStyles.input, errors.stock && editProductModalStyles.inputError]}
                 value={formData.stock}
                 onChangeText={(text) => setFormData({ ...formData, stock: text })}
                 placeholder="0"
                 keyboardType="number-pad"
                 placeholderTextColor="#999"
               />
-              {errors.stock && <Text style={styles.errorText}>{errors.stock}</Text>}
+              {errors.stock && <Text style={editProductModalStyles.errorText}>{errors.stock}</Text>}
             </View>
 
             {/* Description */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Description</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Description</Text>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[editProductModalStyles.input, editProductModalStyles.textArea]}
                 value={formData.description}
                 onChangeText={(text) => setFormData({ ...formData, description: text })}
                 placeholder="Enter product description"
@@ -195,10 +195,10 @@ const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
             </View>
 
             {/* Image URL */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Image URL</Text>
+            <View style={editProductModalStyles.inputGroup}>
+              <Text style={editProductModalStyles.label}>Image URL</Text>
               <TextInput
-                style={styles.input}
+                style={editProductModalStyles.input}
                 value={formData.imageUrl}
                 onChangeText={(text) => setFormData({ ...formData, imageUrl: text })}
                 placeholder="https://example.com/image.jpg"
@@ -209,24 +209,24 @@ const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
           </ScrollView>
 
           {/* Action Buttons */}
-          <View style={styles.buttonContainer}>
+          <View style={editProductModalStyles.buttonContainer}>
             <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
+              style={[editProductModalStyles.button, editProductModalStyles.cancelButton]}
               onPress={handleCancel}
               disabled={loading}
             >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <Text style={editProductModalStyles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.saveButton]}
+              style={[editProductModalStyles.button, editProductModalStyles.saveButton]}
               onPress={handleSave}
               disabled={loading}
             >
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+                <Text style={editProductModalStyles.saveButtonText}>Save Changes</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -235,117 +235,5 @@ const EditProductModal = ({ visible, product, onClose, onSave, apiBase }) => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    width: '90%',
-    maxHeight: '85%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f5f5f5',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    fontSize: 20,
-    color: '#666',
-    fontWeight: 'bold',
-  },
-  formContainer: {
-    padding: 20,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#333',
-    backgroundColor: '#fafafa',
-  },
-  inputError: {
-    borderColor: '#d32f2f',
-    borderWidth: 2,
-  },
-  textArea: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
-  errorText: {
-    color: '#d32f2f',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#f5f5f5',
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  cancelButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: '#4CAF50',
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
 
 export default EditProductModal;
